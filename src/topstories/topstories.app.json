@@ -29,6 +29,23 @@
         "type": "url",
         "description": "The HTML Link to the sources main page"
       }
+    },
+    "entity": {
+      "name": {
+        "type": "string",
+        "description": "The title of the entity"
+      },
+      "type": {
+        "type": "string",
+        "description": "The type of the discovered entity.  (i.e. Person, Place, Thing)"
+      },
+      "topic": {
+        "type": "topic"
+      },
+      "headlines": {
+        "type": "headlines[]",
+        "description": "The headlines this entity was discovered in."
+      }
     }
   },
   "commands": {
@@ -46,6 +63,25 @@
       "result": {
         "type": "headline[]",
         "description": "List of headlines extracted from the topics."
+      }
+    },
+    "getEntities": {
+      "parameters": {},
+      "errors":{},
+      "result": {
+        "type": "entity[]",
+        "description": "Returns a list of all the named entities from the Top Stories Topics."
+      }
+    },
+    "getUrlEntities": {
+      "parameters": {
+        "type": "url",
+        "description": "The URL of a news article or webpage to preform a Named Entity Reconition on."
+      },
+      "errors": {},
+      "result": {
+        "type": "entity[]",
+        "description": "The named entities extracted from the URL page content."
       }
     }
   }
