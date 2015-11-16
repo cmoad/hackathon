@@ -12,8 +12,22 @@
         "description": "The site this story was extracted from."
       },
       "url": {
-        "type": "uri",
+        "type": "url",
         "description": "The url to the page this story was found on."
+      }
+    },
+    "headline": {
+      "topic": {
+        "type": "topic",
+        "description": "The topic for this headline"
+      },
+      "title": {
+        "type": "string",
+        "description": "The Headline text"
+      },
+      "url": {
+        "type": "url",
+        "description": "The HTML Link to the sources main page"
       }
     }
   },
@@ -24,6 +38,14 @@
       "result": {
         "type": "topic[]",
         "description": "List of top stories happening now."
+      }
+    },
+    "getHeadlines": {
+      "parameters":{},
+      "errors":{},
+      "result": {
+        "type": "headline[]",
+        "description": "List of headlines extracted from the topics."
       }
     }
   }
