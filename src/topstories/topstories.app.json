@@ -17,13 +17,13 @@
       }
     },
     "headline": {
+      "topic": {
+        "type": "topic",
+        "description": "The topic for this headline"
+      },
       "title": {
         "type": "string",
         "description": "The Headline text"
-      },
-      "source": {
-        "type": "string",
-        "description": "Where this headline was captured from."
       },
       "url": {
         "type": "url",
