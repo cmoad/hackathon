@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./node_modules/papyri/run archive -d='./topstories.app.json' -p='./topstories.app.js' getStories $@
+./node_modules/papyri/run archive -d='./topstories.app.json' -p='./topstories.app.js' getTopics $@;

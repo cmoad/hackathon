@@ -2,7 +2,7 @@
   "name": "topstories",
   "description": "Fetches a list of top news stories happening now.",
   "types": {
-    "story": {
+    "topic": {
       "title": {
         "type": "string",
         "description": "The title of the story."
@@ -18,14 +18,12 @@
     }
   },
   "commands": {
-    "getStories": {
+    "getTopics": {
       "parameters": {},
       "errors": {},
       "result": {
-        "stories": {
-          "type": "story[]",
-          "description": "List of top stories happening now."
-        }
+        "type": "topic[]",
+        "description": "List of top stories happening now."
       }
     }
   }
