@@ -1,0 +1,25 @@
+{
+  "private": true,
+  "name": "topstories",
+  "version": "1.0.0",
+  "description": "Fetches a list of top news stories happening now.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cmoad/hackathon.git"
+  },
+  "author": "Brad Serbu",
+  "license": "Apache",
+  "bugs": {
+    "url": "https://github.com/cmoad/hackathon/issues"
+  },
+  "homepage": "https://github.com/cmoad/hackathon#readme",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "papyri": "0.0.12",
+    "request": "^2.65.0",
+    "underscore": "^1.8.3"
+  }
+}
