@@ -16,6 +16,7 @@ const errors = require('papyri').errors;
 const logger = require('papyri').logger;
 const readability = require('node-readability');
 const sanitizer = require('sanitizer');
+const nlp = require('nlp_compromise');
 
 /**
  * Return a list of the 'Top Stories' from the Google News page
@@ -123,6 +124,8 @@ function getEntities(callback) {
         //
         //    callback(null, results);
         //});
+
+
     });
 }
 
@@ -161,8 +164,8 @@ function getArticleContent(url, callback) {
 
         var obj = {
             "url": url,
-            "title": article.getTitle().trim(),
-            "contents": stripHTML(article.getContent() || "")
+            "title": article.title.trim(),
+            "content": stripHTML(article.content || "")
         };
 
         callback(null, obj);
@@ -173,10 +176,13 @@ function getUrlEntities(url, callback) {
     if (!url)
         url = "http://www.hollywoodreporter.com/news/box-office-spectre-stays-no-840163";
 
-    getArticleContent(url, (err, content) => {
+    getArticleContent(url, (err, response) => {
         if (err) return callback(err);
 
+        const results = nlp.spot(response.content);
+        const entities = _.pluck(results, 'text');
 
+        callback(null, entities);
     });
 }
 

@@ -19,6 +19,7 @@
   "dependencies": {
     "async": "^1.5.0",
     "cheerio": "^0.19.0",
+    "nlp_compromise": "^1.1.4",
     "node-readability": "^2.1.0",
     "papyri": "0.0.12",
     "readability": "^0.1.0",
