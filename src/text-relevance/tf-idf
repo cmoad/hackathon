@@ -1,0 +1,34 @@
+import nltk, string, json, gzip
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+stemmer = nltk.stem.porter.PorterStemmer()
+remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
+
+def stem_tokens(tokens):
+    return [stemmer.stem(item) for item in tokens]
+
+# Remove punctuation, lowercase, stem
+def normalize(text):
+    return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
+
+vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english')
+def cosine_sim(text1, text2):
+    tfidf = vectorizer.fit_transform([text1, text2])
+    return {'similarity' : ((tfidf * tfidf.T).A)[0,1]}
+
+
+article = open ("oregon-shooting.txt", "r").read()
+
+# Load our training set and create a dictionary of the training posts
+docsTrain = [json.loads(line) for line in gzip.open('../../data/train.json.gz')]
+labeled_ids = json.load(open('../../data/train-set.json', 'r'))
+docsTrainDict = {}
+for doc in docsTrain: docsTrainDict[doc['id']] = doc
+
+featuresets = [(cosine_sim(docsTrainDict[doc_id]['text'], article), relevance) for (doc_id, relevance) in labeled_ids]
+
+train_set, test_set = featuresets[:100], featuresets[100:]
+classifier = nltk.NaiveBayesClassifier.train(train_set)
+
+classifier.show_most_informative_features(10)
+print nltk.classify.accuracy(classifier, test_set)
