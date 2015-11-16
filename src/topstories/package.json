@@ -1,0 +1,19 @@
+{
+  "name": "topstories",
+  "version": "1.0.0",
+  "description": "Fetches a list of top news stories happening now.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cmoad/hackathon.git"
+  },
+  "author": "Brad Serbu",
+  "license": "Apache",
+  "bugs": {
+    "url": "https://github.com/cmoad/hackathon/issues"
+  },
+  "homepage": "https://github.com/cmoad/hackathon#readme"
+}
