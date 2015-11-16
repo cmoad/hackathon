@@ -1,8 +1,8 @@
 {
+  "private": true,
   "name": "topstories",
   "version": "1.0.0",
   "description": "Fetches a list of top news stories happening now.",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/cmoad/hackathon/issues"
   },
-  "homepage": "https://github.com/cmoad/hackathon#readme"
+  "homepage": "https://github.com/cmoad/hackathon#readme",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "papyri": "0.0.12"
+  }
 }

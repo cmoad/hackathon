@@ -1,2 +1,32 @@
-'use strict';
-
+{
+  "name": "topstories",
+  "description": "Fetches a list of top news stories happening now.",
+  "types": {
+    "story": {
+      "title": {
+        "type": "string",
+        "description": "The title of the story."
+      },
+      "source": {
+        "type": "string",
+        "description": "The site this story was extracted from."
+      },
+      "url": {
+        "type": "uri",
+        "description": "The url to the page this story was found on."
+      }
+    }
+  },
+  "commands": {
+    "getStories": {
+      "parameters": {},
+      "errors": {},
+      "result": {
+        "stories": {
+          "type": "story[]",
+          "description": "List of top stories happening now."
+        }
+      }
+    }
+  }
+}
