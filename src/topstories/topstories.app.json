@@ -48,6 +48,23 @@
       }
     }
   },
+  "interfaces": {
+    "rest-api": {
+      "type": "RESTInterface",
+      "config": {
+        "path": "/",
+        "host": "0.0.0.0",
+        "port": 8081
+      },
+      "endpoints": {
+        "commands": {
+          "getTopics": {},
+          "getEntities": {},
+          "getHeadlines": {}
+        }
+      }
+    }
+  },
   "commands": {
     "getTopics": {
       "parameters": {},

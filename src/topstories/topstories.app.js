@@ -130,13 +130,17 @@ function getEntities(callback) {
                 getNamedEntities(headline.title, (err, entities) => {
                     if (err) return cb(err);
 
-                    cb(null, {
-                        headline: headline,
-                        entities: entities
-                    });
+                    cb(null, entities);
                 });
             }, (err, results) => {
-                callback(null, results);
+
+                const entities = _.unique(_.flatten(results));
+
+                callback(null, {
+                    topic: topic,
+                    headlines: headlines,
+                    entities: entities
+                });
             });
 
             //headlines.forEach(headline => {
