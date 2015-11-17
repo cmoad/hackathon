@@ -126,7 +126,7 @@ function getEntities(callback) {
             const topic = results.topic;
             const headlines = results.headlines;
 
-            async.map(headlines, (headline, cb) => {
+            async.mapLimit(headlines, 3, (headline, cb) => {
                 getNamedEntities(headline.title, (err, entities) => {
                     if (err) return cb(err);
 
@@ -228,6 +228,8 @@ function getNamedEntitiesDandelion(text, callback) {
         json: true
     }, (err, response, body) => {
         if (err) return callback(err);
+
+        
 
         callback(null, body);
     });
