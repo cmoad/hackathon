@@ -1,5 +1,7 @@
 'use strict';
 
+const ASYNC_LIMIT = 3;
+
 // ** Constants
 const GOOGLE_TOPICS = {
     "baseUrl": "https://news.google.com",
@@ -97,7 +99,7 @@ function getHeadlines(callback) {
         if (err) return callback(err);
 
         // ** Fetch headlines for each topic
-        async.mapLimit(topics, 3, getTopicHeadlines, (err, results) => {
+        async.mapLimit(topics, ASYNC_LIMIT, getTopicHeadlines, (err, results) => {
             if (err) return callback(err);
 
             callback(null, results);
@@ -118,51 +120,50 @@ function getEntities(callback) {
     getTopics((err, topics) => {
         if (err) return callback(err);
 
-        const first = topics[0];
+        async.mapLimit(topics, ASYNC_LIMIT, (topic, callback) => {
+            getTopicHeadlines(topic, (err, results) => {
+                if (err) return callback(err);
 
-        getTopicHeadlines(first, (err, results) => {
-            if (err) return callback(err);
+                const headlines = results.headlines;
 
-            const topic = results.topic;
-            const headlines = results.headlines;
+                async.mapLimit(headlines, ASYNC_LIMIT, (headline, cb) => {
+                    getNamedEntities(headline.title, (err, entities) => {
+                        if (err) return cb(err);
 
-            async.mapLimit(headlines, 3, (headline, cb) => {
-                getNamedEntities(headline.title, (err, entities) => {
-                    if (err) return cb(err);
+                        cb(null, entities);
+                    });
+                }, (err, results) => {
 
-                    cb(null, entities);
+                    const entities = _.unique(_.flatten(results));
+
+                    callback(null, {
+                        topic: topic,
+                        headlines: headlines,
+                        entities: entities
+                    });
                 });
-            }, (err, results) => {
 
-                const entities = _.unique(_.flatten(results));
+                //headlines.forEach(headline => {
+                //    headline.entities = getNamedEntities(headline.title)
+                //});
+                //
+                //callback(null, results);
 
-                callback(null, {
-                    topic: topic,
-                    headlines: headlines,
-                    entities: entities
-                });
+                // ** Extract named entities from the title of the headline
+                //async.mapLimi(headlines, (headline, cb) => {
+                //    logger.info('GET ENTITIES:', headline.url);
+                //    getUrlEntities(headline.url, (err, urlEntities) => {
+                //        if (err) return cb(err);
+                //
+                //        cb(null, {
+                //            "headline": headline,
+                //            "titleEntities": getNamedEntities(headline.title),
+                //            "urlEntities": urlEntities
+                //        });
+                //    });
+                //});
             });
-
-            //headlines.forEach(headline => {
-            //    headline.entities = getNamedEntities(headline.title)
-            //});
-            //
-            //callback(null, results);
-
-            // ** Extract named entities from the title of the headline
-            //async.mapLimi(headlines, (headline, cb) => {
-            //    logger.info('GET ENTITIES:', headline.url);
-            //    getUrlEntities(headline.url, (err, urlEntities) => {
-            //        if (err) return cb(err);
-            //
-            //        cb(null, {
-            //            "headline": headline,
-            //            "titleEntities": getNamedEntities(headline.title),
-            //            "urlEntities": urlEntities
-            //        });
-            //    });
-            //});
-        });
+        }, callback);
     });
 }
 
@@ -229,7 +230,6 @@ function getNamedEntitiesDandelion(text, callback) {
     }, (err, response, body) => {
         if (err) return callback(err);
 
-        
 
         callback(null, body);
     });
