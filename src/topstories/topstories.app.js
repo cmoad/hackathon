@@ -205,15 +205,31 @@ function getArticleContent(url, callback) {
     });
 }
 
-function getNamedEntities(content, callback) {
-    const results = nlp.spot(content);
+function getNamedEntities(text, callback) {
+    const results = nlp.spot(text);
     const entities = _.pluck(results, 'text');
 
     callback(null, entities);
 }
 
-function getNamedEntitiesDandelion(content, callback) {
+function getNamedEntitiesDandelion(text, callback) {
+    const url = "http://gotham.bradserbu.com:8080/commands/analyzeText";
 
+    const params = {
+        text: text
+    };
+
+    request.get(url, {
+        qs: params,
+        json: true
+    }, (err, response, body) => {
+        if (err) return callback(err);
+
+        callback(null, body);
+    });
+
+    //request.post(url, )
+    //callback(errors('NOT_IMPLEMENTED'));
 }
 
 function getUrlEntities(url, callback) {
@@ -224,9 +240,7 @@ function getUrlEntities(url, callback) {
         if (err) return callback(err);
 
         const content = response.content.replace('\n', ' ').replace('\\', '');
-        const entities = getNamedEntities(content);
-
-        callback(null, entities);
+        getNamedEntities(content, callback);
     });
 }
 
