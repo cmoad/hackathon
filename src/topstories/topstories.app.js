@@ -97,7 +97,7 @@ function getHeadlines(callback) {
         if (err) return callback(err);
 
         // ** Fetch headlines for each topic
-        async.map(topics, getTopicHeadlines, (err, results) => {
+        async.mapLimit(topics, 3, getTopicHeadlines, (err, results) => {
             if (err) return callback(err);
 
             callback(null, results);
@@ -118,14 +118,47 @@ function getEntities(callback) {
     getTopics((err, topics) => {
         if (err) return callback(err);
 
-        // ** Fetch headlines for each topic
-        //async.map(topics, getTopicHeadlines, (err, results) => {
-        //    if (err) return callback(err);
-        //
-        //    callback(null, results);
-        //});
+        const first = topics[0];
 
+        getTopicHeadlines(first, (err, results) => {
+            if (err) return callback(err);
 
+            const topic = results.topic;
+            const headlines = results.headlines;
+
+            async.map(headlines, (headline, cb) => {
+                getNamedEntities(headline.title, (err, entities) => {
+                    if (err) return cb(err);
+
+                    cb(null, {
+                        headline: headline,
+                        entities: entities
+                    });
+                });
+            }, (err, results) => {
+                callback(null, results);
+            });
+
+            //headlines.forEach(headline => {
+            //    headline.entities = getNamedEntities(headline.title)
+            //});
+            //
+            //callback(null, results);
+
+            // ** Extract named entities from the title of the headline
+            //async.mapLimi(headlines, (headline, cb) => {
+            //    logger.info('GET ENTITIES:', headline.url);
+            //    getUrlEntities(headline.url, (err, urlEntities) => {
+            //        if (err) return cb(err);
+            //
+            //        cb(null, {
+            //            "headline": headline,
+            //            "titleEntities": getNamedEntities(headline.title),
+            //            "urlEntities": urlEntities
+            //        });
+            //    });
+            //});
+        });
     });
 }
 
@@ -139,7 +172,7 @@ function stripHTML(html) {
 
     // RegEx to remove needless newlines and whitespace.
     // See: http://stackoverflow.com/questions/816085/removing-redundant-line-breaks-with-regular-expressions
-    clean = clean.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/ig, "\n");
+    clean = clean.replace(/(?:(?:\r\n|\r|\n)\s*){2,}/ig, " ");
 
     // Return the final string, minus any leading/trailing whitespace.
     return clean.trim();
@@ -172,15 +205,26 @@ function getArticleContent(url, callback) {
     });
 }
 
+function getNamedEntities(content, callback) {
+    const results = nlp.spot(content);
+    const entities = _.pluck(results, 'text');
+
+    callback(null, entities);
+}
+
+function getNamedEntitiesDandelion(content, callback) {
+
+}
+
 function getUrlEntities(url, callback) {
-    if (!url)
-        url = "http://www.hollywoodreporter.com/news/box-office-spectre-stays-no-840163";
+    //if (!url)
+    //    url = "http://www.hollywoodreporter.com/news/box-office-spectre-stays-no-840163";
 
     getArticleContent(url, (err, response) => {
         if (err) return callback(err);
 
-        const results = nlp.spot(response.content);
-        const entities = _.pluck(results, 'text');
+        const content = response.content.replace('\n', ' ').replace('\\', '');
+        const entities = getNamedEntities(content);
 
         callback(null, entities);
     });
