@@ -1,6 +1,7 @@
 import nltk, string, json, gzip
 import webbrowser
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics.pairwise import cosine_similarity
 
 stemmer = nltk.stem.porter.PorterStemmer()
@@ -15,18 +16,22 @@ def normalize(text):
     return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
 
 vectorizer = TfidfVectorizer(tokenizer=normalize, stop_words='english', use_idf=True)
+lsa = TruncatedSVD(n_components=50)
 def cosine_sim(text1, text2):
     tfidf = vectorizer.fit_transform([text1, text2])
-    return  ((tfidf * tfidf.T).A)[0,1]
+    tfidf = lsa.fit_transform(tfidf)
+    #return  ((tfidf * tfidf.T).A)[0,1]
+    return cosine_similarity(tfidf)[0,1]
 
 article = open ("oregon-article.txt", "r").read()
 terms = open ("oregon-terms.txt", "r").read()
 pope_terms = open ("pope-terms.txt", "r").read()
+pope_article = open ("pope-article.txt", "r").read()
 
 def relevance_features(doc):
     return {
-        #'article_similarity' : cosine_sim(doc['text'], article),
-        'terms_similarity' : cosine_sim(doc['text'], terms),
+        'article_similarity' : cosine_sim(doc['text'], article),
+        #'terms_similarity' : cosine_sim(doc['text'], terms),
         #'has_hashtag': len(doc['entities']['hashtags']) > 0,
         #'is_reply': bool(doc['in_reply_to_user_id']),
         #'word_count_gt8': len(doc['text'].split()) > 8,
@@ -34,24 +39,24 @@ def relevance_features(doc):
 
 
 # Load our training set and create a dictionary of the training posts
-#docsOR = [json.loads(line) for line in gzip.open('../../data/oregon-shooting.json.gz')]
+# docsOR = [json.loads(line) for line in gzip.open('../../data/oregon-shooting.json.gz')]
 docsPope = [json.loads(line) for line in gzip.open('../../data/pope-visit-dc.json.gz')]
-#docsTrain = [json.loads(line) for line in gzip.open('../../data/train.json.gz')]
-#labeled_ids = json.load(open('../../data/train-set.json', 'r'))
-#docsTrainDict = {}
-#for doc in docsTrain: docsTrainDict[doc['id']] = doc
-
-#featuresets = [(relevance_features(docsTrainDict[doc_id]), relevance) for (doc_id, relevance) in labeled_ids]
-#train_set, test_set = featuresets[:100], featuresets[100:]
-
-#classifier = nltk.NaiveBayesClassifier.train(train_set)
-
-
+# docsTrain = [json.loads(line) for line in gzip.open('../../data/train.json.gz')]
+# labeled_ids = json.load(open('../../data/train-set.json', 'r'))
+# docsTrainDict = {}
+# for doc in docsTrain: docsTrainDict[doc['id']] = doc
+#
+# featuresets = [(relevance_features(docsTrainDict[doc_id]), relevance) for (doc_id, relevance) in labeled_ids]
+# train_set, test_set = featuresets[:100], featuresets[100:]
+#
+# classifier = nltk.NaiveBayesClassifier.train(train_set)
+#
+#
 # print nltk.classify.accuracy(classifier, test_set)
 # probs = [(classifier.prob_classify(relevance_features(doc)), doc) for doc in docsTrain]
 # probs.sort(key=lambda x: x[0], reverse=True)
 # x = [webbrowser.open('https://twitter.com/statuses/'+d['id_str']) for p,d in probs[:5]]
 
-similarity = [(cosine_sim(doc['text'], pope_terms), doc) for doc in docsPope]
+similarity = [(cosine_sim(doc['text'], pope_article), doc) for doc in docsPope]
 similarity.sort(key=lambda x: x[0], reverse=True)
 [webbrowser.open('https://twitter.com/statuses/'+d['id_str']) for p,d in similarity[:5]]
